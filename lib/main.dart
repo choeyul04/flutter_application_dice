@@ -17,30 +17,50 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   Dice dice = Dice(size: 10);
   late Timer timer;
-  int resultNum = 0;
+  dynamic resultNum = 0;
   String resultView = '';
+  bool isStart = false;
 
   void start() {
-    timer = Timer.periodic(Duration(milliseconds: 10), (timer) {
-      dice.shake();
-      setState(() {
-        resultNum = dice.dice[0];
+    if (!isStart & dice.dice.isNotEmpty) {
+      timer = Timer.periodic(const Duration(milliseconds: 10), (timer) {
+        dice.shake();
+        setState(() {
+          resultNum = dice.dice[0];
+          isStart = true;
+        });
       });
-    });
-  }
-
-  void pickUp() {
-    setState(() {
-      // resultView = resultView + ' ' + dice.pick().toString();
-      resultView = '$resultView ${dice.pick()}';
-    });
-    if (dice.dice.isEmpty) {
-      //클래스이름.안에변수이름
-      timer.cancel();
     }
   }
 
-  void reSet() {}
+  void pickUp() {
+    if (dice.dice.isNotEmpty && isStart) {
+      setState(() {
+        // resultView = resultView + ' ' + dice.pick().toString();
+        resultView = '$resultView ${dice.pick()}';
+      });
+      if (dice.dice.isEmpty) {
+        //클래스이름.안에변수이름
+        timer.cancel();
+        setState(() {
+          isStart = false;
+          resultNum = '끝';
+        });
+      }
+    }
+  }
+
+  void reset() {
+    setState(() {
+      resultNum = '초기화 했습니다';
+      resultView = '';
+      dice.init();
+      if (isStart) {
+        timer.cancel();
+      }
+      isStart = false;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -79,7 +99,7 @@ class _MyAppState extends State<MyApp> {
                         icon: Icon(Icons.check_circle_outline)),
                     IconButton(
                         iconSize: 100,
-                        onPressed: pickUp,
+                        onPressed: reset,
                         icon: Icon(Icons.settings_backup_restore_outlined)),
                   ],
                 ))

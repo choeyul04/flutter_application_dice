@@ -3,13 +3,15 @@ class Dice {
   late List<int> dice = [];
 
   Dice({required this.size}) {
-    for (int i = 1; i <= size; i++) {
-      dice.add(i);
-    }
+    init();
   }
 
   void init() {
     //다시 원래 크기로 만들기
+    dice.clear();
+    for (int i = 1; i <= size; i++) {
+      dice.add(i);
+    }
   }
 
   void shake() {
