@@ -15,19 +15,32 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  Dice dice = Dice(size: 100);
-
+  Dice dice = Dice(size: 10);
   late Timer timer;
   int resultNum = 0;
+  String resultView = '';
 
   void start() {
-    timer = Timer.periodic(Duration(milliseconds: 100), (timer) {
+    timer = Timer.periodic(Duration(milliseconds: 10), (timer) {
       dice.shake();
       setState(() {
         resultNum = dice.dice[0];
       });
     });
   }
+
+  void pickUp() {
+    setState(() {
+      // resultView = resultView + ' ' + dice.pick().toString();
+      resultView = '$resultView ${dice.pick()}';
+    });
+    if (dice.dice.isEmpty) {
+      //클래스이름.안에변수이름
+      timer.cancel();
+    }
+  }
+
+  void reSet() {}
 
   @override
   Widget build(BuildContext context) {
@@ -43,11 +56,11 @@ class _MyAppState extends State<MyApp> {
                     style: TextStyle(fontSize: 60),
                   ),
                 )),
-            const Flexible(
+            Flexible(
                 flex: 1,
                 child: Center(
                   child: Text(
-                    '결과',
+                    '$resultView',
                     style: TextStyle(fontSize: 20),
                   ),
                 )),
@@ -62,8 +75,12 @@ class _MyAppState extends State<MyApp> {
                         icon: Icon(Icons.play_circle)),
                     IconButton(
                         iconSize: 100,
-                        onPressed: null,
+                        onPressed: pickUp,
                         icon: Icon(Icons.check_circle_outline)),
+                    IconButton(
+                        iconSize: 100,
+                        onPressed: pickUp,
+                        icon: Icon(Icons.settings_backup_restore_outlined)),
                   ],
                 ))
           ],
